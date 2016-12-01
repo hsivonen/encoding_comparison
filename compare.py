@@ -46,38 +46,38 @@ encodings = [
     "ja_shift_jis",
     "ko_euc_kr",
     "user_defined",
-    "ar_utf_16be",
     "ar_utf_16le",
-    "cs_utf_16be",
     "cs_utf_16le",
-    "de_utf_16be",
     "de_utf_16le",
-    "el_utf_16be",
     "el_utf_16le",
-    "en_utf_16be",
     "en_utf_16le",
-    "fr_utf_16be",
     "fr_utf_16le",
-    "he_utf_16be",
     "he_utf_16le",
-    "pt_utf_16be",
     "pt_utf_16le",
-    "ru_utf_16be",
     "ru_utf_16le",
-    "th_utf_16be",
     "th_utf_16le",
-    "tr_utf_16be",
     "tr_utf_16le",
-    "vi_utf_16be",
     "vi_utf_16le",
-    "zh_cn_utf_16be",
     "zh_cn_utf_16le",
-    "zh_tw_utf_16be",
     "zh_tw_utf_16le",
-    "ja_utf_16be",
     "ja_utf_16le",
-    "ko_utf_16be",
     "ko_utf_16le",
+    "ar_utf_16be",
+    "cs_utf_16be",
+    "de_utf_16be",
+    "el_utf_16be",
+    "en_utf_16be",
+    "fr_utf_16be",
+    "he_utf_16be",
+    "pt_utf_16be",
+    "ru_utf_16be",
+    "th_utf_16be",
+    "tr_utf_16be",
+    "vi_utf_16be",
+    "zh_cn_utf_16be",
+    "zh_tw_utf_16be",
+    "ja_utf_16be",
+    "ko_utf_16be",
 ]
 
 language_names = {
@@ -97,6 +97,26 @@ language_names = {
     "zh_tw": "Traditional Chinese",
     "ja": "Japanese",
     "ko": "Korean",
+}
+
+encoding_names = {
+    "_windows_1250": "windows-1250",
+    "_windows_1251": "windows-1251",
+    "_windows_1252": "windows-1252",
+    "_windows_1253": "windows-1253",
+    "_windows_1254": "windows-1254",
+    "_windows_1255": "windows-1255",
+    "_windows_1256": "windows-1256",
+    "_windows_1258": "windows-1258",
+    "_windows_874": "windows-874",
+    "_gb18030": "gb18030",
+    "_big5": "Big5",
+    "_iso_2022_jp": "ISO-2022-JP",
+    "_euc_jp": "EUC-JP",
+    "_shift_jis": "Shift_JIS",
+    "_euc_kr": "EUC-KR",
+    "_utf_16be": "UTF-16BE",
+    "_utf_16le": "UTF-16LE",
 }
 
 categories = [
@@ -208,13 +228,20 @@ def format_encoding(lang_encoding):
         return "x-user-defined"
     if language_names.has_key(lang_encoding):
         return language_names[lang_encoding] + ", UTF-8"
+    for lang in language_names.keys():
+        if lang_encoding.startswith(lang):
+            return "%s, %s" % (language_names[lang], encoding_names[lang_encoding[len(lang):]])
     
+def colorize(baseline_result, comparison_result):
+    (hue, factor) = (0, baseline_result / comparison_result) if baseline_result < comparison_result else (120, comparison_result / baseline_result)
+    return "%d, %0.6f%%" % (hue, pow((1.0 - factor), 0.75) * 100)
 
 read_file(sys.argv[1], baseline_results)
 read_file(sys.argv[2], comparison_results)
 
 out = sys.stdout
 out.write("<table>\n")
+out.write("<thead>\n")
 out.write("<tr><td></td><th colspan=6>Decode</th><th colspan=5>Encode</th></tr>\n")
 out.write("<tr><td></td><th colspan=3>UTF-16</th><th colspan=3>UTF-8</th><th colspan=3>UTF-16</th><th colspan=2>UTF-8</th></tr>\n")
 out.write("<td></td>\n")
@@ -222,19 +249,23 @@ for category in categories:
     out.write("<th>\n")
     out.write(category_names[category])
     out.write("</th>\n")
+out.write("</tr>\n")
+out.write("</thead><tbody>\n")
 for lang_encoding in encodings:
     out.write("<tr>\n")
     out.write("<th>\n")
-    out.write(lang_encoding)
+    out.write(format_encoding(lang_encoding))
     out.write("</th>\n")
     for category in categories:
-        out.write("<td>\n")
         paired = pairings[category]
-        factor = read_float(baseline_results, category, lang_encoding) / read_float(comparison_results, paired, lang_encoding)
-        if not math.isnan(factor):
-            out.write("%0.2f" % factor)
-        out.write("</td>\n")            
+        baseline_result = read_float(baseline_results, category, lang_encoding)
+        comparison_result = read_float(comparison_results, paired, lang_encoding)
+        factor = baseline_result / comparison_result
+        if math.isnan(factor):
+            out.write("<td></td>\n")
+        else:
+            out.write("<td style='background-color: hsl(%s, 65%%);'>%0.2f</td>\n" % (colorize(baseline_result, comparison_result), factor))
     out.write("</tr>\n")
-
+out.write("</tbody>\n")
 out.write("</table>\n")
 
