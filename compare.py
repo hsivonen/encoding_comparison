@@ -16,6 +16,7 @@ encodings = [
     "de",
     "el",
     "en",
+    "jquery",
     "fr",
     "he",
     "pt",
@@ -86,6 +87,7 @@ language_names = {
     "de": "German",
     "el": "Greek",
     "en": "English",
+    "jquery": "JavaScript",
     "fr": "French",
     "he": "Hebrew",
     "pt": "Portuguese",
@@ -203,7 +205,7 @@ def split_bench(name, benches):
     for bench in benches:
         if name.startswith(bench):
             return (name[:len(bench)], name[len(bench):])
-    raise Error 
+    raise Error
 
 def read_file(file_name, results):
     benches = results.keys()
@@ -231,7 +233,7 @@ def format_encoding(lang_encoding):
     for lang in language_names.keys():
         if lang_encoding.startswith(lang):
             return "%s, %s" % (language_names[lang], encoding_names[lang_encoding[len(lang):]])
-    
+
 def colorize(baseline_result, comparison_result):
     (hue, factor) = (0, baseline_result / comparison_result) if baseline_result < comparison_result else (120, comparison_result / baseline_result)
     return "%d, %0.6f%%" % (hue, pow((1.0 - factor), 0.75) * 100)
