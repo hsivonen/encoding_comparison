@@ -125,12 +125,15 @@ categories = [
     "uconv_to_utf16_",
     "icu_to_utf16_",
     "windows_to_utf16_",
+    "webkit_to_utf16_",
+    "kewb_to_utf16_",
     "std_validation_",
     "rust_to_string_",
     "iconv_to_utf8_",
     "uconv_from_utf16_",
     "icu_from_utf16_",
     "windows_from_utf16_",
+    "webkit_from_utf16_",
     "rust_to_vec_",
     "iconv_from_utf8_",
 ]
@@ -139,12 +142,15 @@ category_names = {
     "uconv_to_utf16_": "uconv",
     "icu_to_utf16_": "ICU",
     "windows_to_utf16_": "kernel32",
+    "webkit_to_utf16_": "WebKit",
+    "kewb_to_utf16_": "kewb",
     "std_validation_": "stdlib",
     "rust_to_string_": "rust-encoding",
     "iconv_to_utf8_": "glibc",
     "uconv_from_utf16_": "uconv",
     "icu_from_utf16_": "ICU",
     "windows_from_utf16_": "kernel32",
+    "webkit_from_utf16_": "WebKit",
     "rust_to_vec_": "rust-encoding",
     "iconv_from_utf8_":"glibc",
 }
@@ -167,6 +173,9 @@ baseline_results = {
     "uconv_to_utf16_": {},
     "windows_from_utf16_": {},
     "windows_to_utf16_": {},
+    "webkit_from_utf16_": {},
+    "webkit_to_utf16_": {},
+    "kewb_to_utf16_": {},
 }
 
 comparison_results = {
@@ -196,6 +205,9 @@ pairings = {
     "uconv_to_utf16_": "decode_to_utf16_",
     "windows_from_utf16_": "encode_from_utf16_",
     "windows_to_utf16_": "decode_to_utf16_",
+    "webkit_from_utf16_": "encode_from_utf16_",
+    "webkit_to_utf16_": "decode_to_utf16_",
+    "kewb_to_utf16_": "decode_to_utf16_",
 }
 
 def parse_number(with_commas):
@@ -244,9 +256,9 @@ read_file(sys.argv[2], comparison_results)
 out = sys.stdout
 out.write("<table>\n")
 out.write("<thead>\n")
-out.write("<tr><td></td><th colspan=6>Decode</th><th colspan=5>Encode</th></tr>\n")
-out.write("<tr><td></td><th colspan=3>UTF-16</th><th colspan=3>UTF-8</th><th colspan=3>UTF-16</th><th colspan=2>UTF-8</th></tr>\n")
-out.write("<td></td>\n")
+out.write("<tr><td rowspan=3></td><th colspan=8>Decode</th><th colspan=6>Encode</th></tr>\n")
+out.write("<tr><th colspan=5>UTF-16</th><th colspan=3>UTF-8</th><th colspan=4>UTF-16</th><th colspan=2>UTF-8</th></tr>\n")
+out.write("<tr>\n")
 for category in categories:
     out.write("<th>\n")
     out.write(category_names[category])
